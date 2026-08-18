@@ -6,7 +6,25 @@ body {
   margin: 0;
   background: #020202;
   color: #ffffff;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: "Determination", Arial, sans-serif;
+  background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUUI3idWpBYixtHzGeHZVcSQYIseZKgyTe9WvzSnCKcZ3BZgxPZqHNpODt&s=10");
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  z-index: -1;
 }
 
 #all-contents {
@@ -80,6 +98,7 @@ h2 {
 
 #nav-ul {
   margin-top: 32px;
+  margin-left: -40px;
   width: 12%;
 }
 
@@ -129,16 +148,20 @@ h2 {
 
 a {
   color: white;
+  text-decoration: none;
 }
 
 a:visited {
   color: white;
+  text-decoration: none;
 }
 
 a:hover {
   color: white;
+  text-decoration: none;
 }
 
 a:active {
   color: white;
+  text-decoration: none;
 }
