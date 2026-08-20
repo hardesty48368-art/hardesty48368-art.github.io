@@ -1,4 +1,5 @@
 const audio = document.querySelector("#background-music");
+const pageIntro = document.querySelector("#page-intro");
 const visualizerBars = document.querySelectorAll(".frequency-bar");
 const shockwaveButtons = document.querySelectorAll("#nav-ul li, #interests li");
 const root = document.documentElement;
@@ -89,7 +90,7 @@ function wrapTextInLetters() {
     {
       acceptNode(node) {
         if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
-        if (node.parentElement.closest("script, style, audio")) {
+        if (node.parentElement.closest("script, style, audio, #page-intro")) {
           return NodeFilter.FILTER_REJECT;
         }
         return NodeFilter.FILTER_ACCEPT;
@@ -201,10 +202,31 @@ function ensureMusicPlaying() {
     });
 }
 
+function setupPageIntro() {
+  if (!pageIntro) return;
+
+  const introSeenKey = "home-page-intro-seen";
+  if (localStorage.getItem(introSeenKey) === "true") {
+    pageIntro.remove();
+    return;
+  }
+
+  pageIntro.addEventListener("click", () => {
+    ensureMusicPlaying();
+    localStorage.setItem(introSeenKey, "true");
+    pageIntro.classList.add("is-fading");
+    pageIntro.addEventListener("transitionend", () => pageIntro.remove(), {
+      once: true,
+    });
+  });
+}
+
 wrapTextInLetters();
+setupPageIntro();
 titleLetters = document.querySelectorAll("h2 .audio-letter");
 audio.addEventListener("error", () => {
   console.error("Background music could not load.");
 });
 document.addEventListener("mousemove", ensureMusicPlaying);
+document.addEventListener("click", ensureMusicPlaying, { once: true });
 ensureMusicPlaying();
