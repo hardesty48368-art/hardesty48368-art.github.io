@@ -2,6 +2,11 @@
   box-sizing: border-box;
 }
 
+:root {
+  --audio-scale: 1;
+  --audio-letter-scale: 1;
+}
+
 body {
   margin: 0;
   background: #020202;
@@ -37,6 +42,7 @@ h2 {
   margin: 0;
   font-size: clamp(4rem, 10vw, 7rem);
   line-height: 0.9;
+  white-space: nowrap;
   font-weight: 900;
   letter-spacing: -0.04em;
   text-transform: uppercase;
@@ -50,6 +56,27 @@ h2 {
   text-transform: uppercase;
   letter-spacing: 0.15em;
   line-height: 1.4;
+}
+
+.content > h2 {
+  animation: top-text-float 2.8s ease-in-out infinite;
+}
+
+@keyframes top-text-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content > h2 {
+    animation: none;
+  }
 }
 #interests {
   margin-top: 32px;
@@ -65,16 +92,58 @@ h2 {
   color: #ffffff;
 }
 
+.audio-letter {
+  position: relative;
+  display: inline-block;
+  white-space: pre;
+  transform: scale(var(--audio-letter-scale));
+  transform-origin: center bottom;
+  line-height: inherit;
+  vertical-align: baseline;
+}
+
+.shockwave-letter {
+  position: absolute;
+  inset: 0;
+  color: transparent;
+  -webkit-text-stroke: 3px #ffffff;
+  text-shadow: none;
+  opacity: 1;
+  pointer-events: none;
+  animation: letter-shockwave 0.6s ease-out forwards;
+}
+
+@keyframes letter-shockwave {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+.nav-li .audio-letter,
+#interests li .audio-letter {
+  transform: none;
+}
+
 #interests ul {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 20px;
 }
 
 #interests li {
+  position: relative;
+  display: inline-flex;
+  width: max-content;
+  max-width: 100%;
   color: #ffffff;
   font-size: 1rem;
   font-weight: 600;
@@ -85,7 +154,7 @@ h2 {
   transition:
     background 0.25s ease,
     color 0.25s ease,
-    transform 0.25s ease;
+    transform 0.08s ease-out;
   cursor: default;
 }
 
@@ -99,7 +168,7 @@ h2 {
 #nav-ul {
   margin-top: 32px;
   margin-left: -40px;
-  width: 12%;
+  width: auto;
 }
 
 #nav-ul h3 {
@@ -117,21 +186,25 @@ h2 {
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 20px;
 }
 
 #nav-ul li {
+  position: relative;
+  display: inline-flex;
+  width: max-content;
+  max-width: 100%;
   color: #ffffff;
   font-size: 1rem;
   font-weight: 600;
-  padding: 10px 20px;
+  padding: 10px 12px;
   background: #000000;
   border: 1px solid #ffffff;
   border-radius: 100px;
   transition:
     background 0.25s ease,
     color 0.25s ease,
-    transform 0.25s ease;
+    transform 0.08s ease-out;
   cursor: default;
 }
 
@@ -151,17 +224,135 @@ a {
   text-decoration: none;
 }
 
+.nav-li a {
+  white-space: nowrap;
+}
+
 a:visited {
   color: white;
   text-decoration: none;
 }
 
 a:hover {
-  color: white;
+  color: #000000;
   text-decoration: none;
 }
 
 a:active {
   color: white;
   text-decoration: none;
+}
+
+.music-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 2;
+  padding: 10px 16px;
+  border: 1px solid #ffffff;
+  border-radius: 100px;
+  background: #000000;
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.shockwave-button {
+  position: absolute;
+  inset: -1px;
+  border: 3px solid #ffffff;
+  border-radius: inherit;
+  opacity: 1;
+  pointer-events: none;
+  transform-origin: center;
+  animation: button-shockwave 0.4s ease-out forwards;
+}
+
+.shockwave-button--nav {
+  animation-name: nav-button-shockwave;
+}
+
+.shockwave-button--interest {
+  border-width: 3px;
+  animation-name: interest-button-shockwave;
+}
+
+@keyframes button-shockwave {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.05, 1.35);
+  }
+}
+
+@keyframes nav-button-shockwave {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.25, 1.35);
+  }
+}
+
+@keyframes interest-button-shockwave {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.25, 1.35);
+  }
+}
+
+.music-toggle:hover,
+.music-toggle.is-playing {
+  background: #ffffff;
+  color: #000000;
+}
+
+#frequency-visualizer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+  width: 100vw;
+  height: 180px;
+  padding: 0 6px;
+  pointer-events: none;
+}
+
+.frequency-bar {
+  display: block;
+  flex: 1 1 0;
+  min-width: 3px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  transition: height 0.03s linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --audio-scale: 1;
+  }
+
+  .shockwave-letter {
+    animation: none;
+  }
 }
