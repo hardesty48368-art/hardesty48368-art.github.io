@@ -5,6 +5,9 @@
 :root {
   --audio-scale: 1;
   --audio-letter-scale: 1;
+  --background-size: cover;
+  --gif-background-size: 175% 175%;
+  --gif-scale-origin-y: -200px;
 }
 
 #page-intro {
@@ -37,10 +40,14 @@ body {
   background: #020202;
   color: #ffffff;
   font-family: "Determination", Arial, sans-serif;
-  background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUUI3idWpBYixtHzGeHZVcSQYIseZKgyTe9WvzSnCKcZ3BZgxPZqHNpODt&s=10");
+  background-image:
+    url("https://images.steamusercontent.com/ugc/781872900829869134/B30483371570A8EFAFDB127C225E5F1B3C08F5B9/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"),
+    url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUUI3idWpBYixtHzGeHZVcSQYIseZKgyTe9WvzSnCKcZ3BZgxPZqHNpODt&s=10");
   background-attachment: fixed;
-  background-size: cover;
-  background-position: center;
+  background-size: var(--gif-background-size), var(--background-size);
+  background-position:
+    center calc(50% + var(--gif-scale-origin-y)),
+    center calc(50% + 2rem);
   background-repeat: no-repeat;
   position: relative;
 }
@@ -266,6 +273,11 @@ a:hover {
 a:active {
   color: white;
   text-decoration: none;
+}
+
+#nav-ul li a,
+#interests li a {
+  color: inherit;
 }
 
 .music-toggle {

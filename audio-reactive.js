@@ -41,6 +41,10 @@ let analyser;
 let frequencyData;
 let animationFrame;
 let musicStartPromise;
+let resumeMusicOnReturn = false;
+let volumeFadeFrame;
+let smoothedBackgroundScale = 1.08;
+let smoothedGifScale = 1.75;
 
 function updateVisualizer() {
   const barCount = visualizerBars.length;
@@ -135,8 +139,33 @@ function updateScale() {
   const bassPulse = Math.pow(bassLevel, 0.65);
   const buttonScale = 1 + Math.min(bassPulse * 0.14, 0.14);
   const letterScale = 1 + Math.min(bassPulse * 0.22, 0.22);
+  const highRangeStart = Math.floor(frequencyData.length * 0.65);
+  let highRangeTotal = 0;
+  let highRangePeak = 0;
+  for (
+    let frequencyIndex = highRangeStart;
+    frequencyIndex < frequencyData.length;
+    frequencyIndex += 1
+  ) {
+    const highRangeValue = frequencyData[frequencyIndex];
+    highRangeTotal += highRangeValue;
+    highRangePeak = Math.max(highRangePeak, highRangeValue);
+  }
+  const highRangeLevel =
+    highRangeTotal / ((frequencyData.length - highRangeStart) * 255);
+  const highRangePeakLevel = highRangePeak / 255;
+  const highRangeResponse = highRangeLevel * 0.4 + highRangePeakLevel * 0.6;
+  const targetBackgroundScale = 1.08 + Math.min(highRangeResponse * 0.52, 0.52);
+  smoothedBackgroundScale +=
+    (targetBackgroundScale - smoothedBackgroundScale) * 0.12;
+  const targetGifScale = 1.75 + Math.min(highRangeResponse * 0.9, 0.9);
+  smoothedGifScale += (targetGifScale - smoothedGifScale) * 0.12;
   root.style.setProperty("--audio-scale", buttonScale.toFixed(3));
   root.style.setProperty("--audio-letter-scale", letterScale.toFixed(3));
+  const backgroundSize = `${(smoothedBackgroundScale * 100).toFixed(1)}% ${(smoothedBackgroundScale * 100).toFixed(1)}%`;
+  const gifBackgroundSize = `${(smoothedGifScale * 100).toFixed(1)}% ${(smoothedGifScale * 100).toFixed(1)}%`;
+  root.style.setProperty("--background-size", backgroundSize);
+  root.style.setProperty("--gif-background-size", gifBackgroundSize);
 
   let lowBassTotal = 0;
   let lowBassPeak = 0;
@@ -202,23 +231,44 @@ function ensureMusicPlaying() {
     });
 }
 
+function fadeAudioTo(targetVolume) {
+  cancelAnimationFrame(volumeFadeFrame);
+
+  const startVolume = audio.volume;
+  const fadeStart = performance.now();
+  const fadeDuration = 300;
+
+  function updateVolume(currentTime) {
+    const progress = Math.min((currentTime - fadeStart) / fadeDuration, 1);
+    audio.volume = startVolume + (targetVolume - startVolume) * progress;
+
+    if (progress < 1) {
+      volumeFadeFrame = requestAnimationFrame(updateVolume);
+    }
+  }
+
+  volumeFadeFrame = requestAnimationFrame(updateVolume);
+}
+
+function dismissPageIntro() {
+  if (!pageIntro || pageIntro.classList.contains("is-fading")) return;
+
+  pageIntro.classList.add("is-fading");
+  pageIntro.addEventListener("transitionend", () => pageIntro.remove(), {
+    once: true,
+  });
+}
+
 function setupPageIntro() {
   if (!pageIntro) return;
 
-  const introSeenKey = "home-page-intro-seen";
-  if (localStorage.getItem(introSeenKey) === "true") {
-    pageIntro.remove();
-    return;
-  }
-
   pageIntro.addEventListener("click", () => {
-    ensureMusicPlaying();
-    localStorage.setItem(introSeenKey, "true");
-    pageIntro.classList.add("is-fading");
-    pageIntro.addEventListener("transitionend", () => pageIntro.remove(), {
-      once: true,
+    startMusic().catch((error) => {
+      console.info("Background music could not start:", error);
     });
   });
+
+  if (!audio.paused) dismissPageIntro();
 }
 
 wrapTextInLetters();
@@ -227,6 +277,43 @@ titleLetters = document.querySelectorAll("h2 .audio-letter");
 audio.addEventListener("error", () => {
   console.error("Background music could not load.");
 });
+audio.addEventListener("playing", dismissPageIntro);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    resumeMusicOnReturn = !audio.paused;
+    if (resumeMusicOnReturn) {
+      fadeAudioTo(0);
+      window.setTimeout(() => {
+        if (document.hidden) {
+          audio.pause();
+          cancelAnimationFrame(animationFrame);
+        }
+      }, 300);
+    }
+    return;
+  }
+
+  if (resumeMusicOnReturn) {
+    resumeMusicOnReturn = false;
+    if (audio.paused) {
+      startMusic()
+        .then(() => fadeAudioTo(1))
+        .catch((error) =>
+          console.info("Background music could not resume:", error),
+        );
+    } else {
+      fadeAudioTo(1);
+    }
+  }
+});
 document.addEventListener("mousemove", ensureMusicPlaying);
-document.addEventListener("click", ensureMusicPlaying, { once: true });
+document.addEventListener(
+  "click",
+  () => {
+    startMusic().catch((error) => {
+      console.info("Background music could not start:", error);
+    });
+  },
+  { once: true },
+);
 ensureMusicPlaying();
