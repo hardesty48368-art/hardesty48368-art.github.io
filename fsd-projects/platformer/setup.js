@@ -35,9 +35,13 @@ let hitDy;
 let hitBoxWidth = 50 * playerScale;
 let hitBoxHeight = 105 * playerScale;
 let firstTimeSetup = true;
+let platformerScreenState = "intro";
+let platformerScreenStartedAt = 0;
+let deathScreenStartedAt = 0;
 
 const keyPress = {
   any: false,
+  downPressed: false,
   up: false,
   left: false,
   down: false,

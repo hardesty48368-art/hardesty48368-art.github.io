@@ -9,9 +9,15 @@ body {
 
 canvas {
   background-color: lightblue;
+  background-image: url("https://twistedsifter.com/wp-content/uploads/2013/05/animated-gifs-of-fighting-game-backgrounds-25.gif");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 125% 125%;
   margin: 20px;
   border-radius: 15px;
   border: 5px solid rgba(118, 0, 233, 0.375);
+  transform: scale(1);
+  transform-origin: center;
 }
 
 img {

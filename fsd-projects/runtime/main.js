@@ -281,9 +281,14 @@ function cleanupGameObjects() {
 function drawBackground() {
   const w = canvas.width;
   const h = canvas.height;
+  const backgroundImage = document.getElementById("background");
 
-  ctx.fillStyle = THEME.upperBackground;
-  ctx.fillRect(0, 0, w, groundY);
+  if (backgroundImage.complete && backgroundImage.naturalWidth > 0) {
+    ctx.drawImage(backgroundImage, 0, 0, w, groundY);
+  } else {
+    ctx.fillStyle = THEME.upperBackground;
+    ctx.fillRect(0, 0, w, groundY);
+  }
 
   ctx.fillStyle = THEME.ground;
   ctx.fillRect(0, groundY, w, groundY + groundHeight);
@@ -298,7 +303,7 @@ function drawScenery() {
     const sceneryType = scenery[sceneryTypeKey];
     const image =
       document.getElementById(
-        sceneryTypeKey
+        sceneryTypeKey,
       ); /* get the image for this scenery type */
     // iterate through each instance of this scenery type
     for (let i = 0; i < sceneryType.instances.length; i++) {
@@ -310,7 +315,7 @@ function drawScenery() {
         instance.x,
         instance.y ? instance.y - instance.height : groundY - instance.height,
         instance.width,
-        instance.height
+        instance.height,
       );
     }
   }
@@ -328,7 +333,7 @@ function drawInteractables() {
       entity.x,
       entity.y - entity.height,
       entity.width,
-      entity.height
+      entity.height,
     );
   }
 }
@@ -361,7 +366,7 @@ function drawProjectiles() {
       projectile.x,
       projectile.y,
       projectile.width,
-      projectile.height
+      projectile.height,
     );
   }
 }
@@ -560,7 +565,7 @@ function drawRobot() {
     player.x - player.hitDx,
     player.y - player.hitDy,
     player.width,
-    player.height
+    player.height,
   );
 }
 
@@ -667,14 +672,14 @@ function drawHUD() {
   ctx.fillText(
     `${currentLevel.name}`,
     HUD_SETTINGS.levelPosition.x,
-    HUD_SETTINGS.levelPosition.y
+    HUD_SETTINGS.levelPosition.y,
   );
 
   // Draw score
   ctx.fillText(
     `Score: ${score}`,
     HUD_SETTINGS.scorePosition.x,
-    HUD_SETTINGS.scorePosition.y
+    HUD_SETTINGS.scorePosition.y,
   );
 
   // Draw health bar
@@ -698,7 +703,7 @@ function drawHUD() {
   ctx.fillText(
     `${health.toFixed(2)}`,
     healthBarX + 5,
-    healthBarY + healthBarHeight - 5
+    healthBarY + healthBarHeight - 5,
   );
 }
 
@@ -711,7 +716,7 @@ function showGameOver() {
     canvas.width / 4,
     canvas.height / 6,
     canvas.width / 2,
-    canvas.height / 2
+    canvas.height / 2,
   );
   ctx.fillStyle = "black";
   ctx.font = "800% serif";
@@ -719,14 +724,14 @@ function showGameOver() {
     "You are dead",
     canvas.width / 4,
     canvas.height / 6 + canvas.height / 5,
-    (canvas.width / 16) * 14
+    (canvas.width / 16) * 14,
   );
   ctx.font = "500% serif";
   ctx.fillText(
     "Hit any key to restart",
     canvas.width / 4,
     canvas.height / 6 + canvas.height / 3,
-    (canvas.width / 16) * 14
+    (canvas.width / 16) * 14,
   );
   if (keyPress.any) {
     keyPress.any = false;
@@ -740,7 +745,7 @@ function showWinScreen() {
     canvas.width / 4,
     canvas.height / 6,
     canvas.width / 2,
-    canvas.height / 2
+    canvas.height / 2,
   );
   ctx.fillStyle = "white";
   ctx.font = "800% serif";
@@ -748,14 +753,14 @@ function showWinScreen() {
     "You Win!",
     canvas.width / 4,
     canvas.height / 6 + canvas.height / 5,
-    (canvas.width / 16) * 14
+    (canvas.width / 16) * 14,
   );
   ctx.font = "500% serif";
   ctx.fillText(
     "Hit any key to restart",
     canvas.width / 4,
     canvas.height / 6 + canvas.height / 3,
-    (canvas.width / 16) * 14
+    (canvas.width / 16) * 14,
   );
   if (keyPress.any) {
     keyPress.any = false;
