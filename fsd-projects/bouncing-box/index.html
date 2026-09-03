@@ -1,108 +1,195 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Bouncing Box</title>
-    <script src="jquery.min.js"></script>
-    <style>
-      .box {
-        width: 70px;
-        height: 70px;
-        background-color: teal;
-        font-size: 300%;
-        text-align: center;
-        user-select: none;
-        display: block;
-        position: absolute;
-        top: 100px;
-        /* Change me! */
-        left: 0px;
+
+<head>
+  <meta charset="utf-8" />
+  <title>Bouncing Box</title>
+  <script src="jquery.min.js"></script>
+  <audio id="edgeSound" src="edge.mp3" preload="auto"></audio>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+    body {
+  background: #000;
+}
+
+    .box {
+      width: 70px;
+      height: 70px;
+      background-image: url("https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/Undertale_red_soul.svg/960px-Undertale_red_soul.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail");
+      background-size: cover;
+      background-position: center;
+      background-color: transparent;
+      font-size: 0;
+      position: absolute;
+      font-size: 200%;
+      font-family: "Press Start 2P", monospace;
+      text-align: center;
+      user-select: none;
+      padding-top: 22px;
+      box-sizing: border-box;
+      display: block;
+      position: center;
+      top: 400px;
+      /* Change me! */
+      left: 0px;
+    }
+
+    .trail {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.5;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+
+    .board {
+      height: 100vh;
+    }
+  </style>
+  <!-- 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> -->
+</head>
+
+<body class="board">
+  <!-- HTML for the box -->
+  <div class="box">?</div>
+
+  <script>
+
+    (function () {
+      "use strict";
+      /* global jQuery */
+
+      //////////////////////////////////////////////////////////////////
+      /////////////////// SETUP DO NOT DELETE //////////////////////////
+      //////////////////////////////////////////////////////////////////
+
+      var box = jQuery(".box"); // reference to the HTML .box element
+      var board = jQuery(".board"); // reference to the HTML .board element
+      var boardWidth = board.width(); // the maximum X-Coordinate of the screen
+      var edgeSound = document.getElementById("edgeSound");
+
+      function playEdgeSound() {
+        edgeSound.currentTime = 0;
+        edgeSound.play();
       }
 
-      .board {
-        height: 100vh;
-      }
-    </style>
-    <!-- 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> -->
-  </head>
+      function createAfterimage() {
+        var trail = box.clone().addClass("trail");
 
-  <body class="board">
-    <!-- HTML for the box -->
-    <div class="box">?</div>
-
-    <script>
-      (function () {
-        "use strict";
-        /* global jQuery */
-
-        //////////////////////////////////////////////////////////////////
-        /////////////////// SETUP DO NOT DELETE //////////////////////////
-        //////////////////////////////////////////////////////////////////
-
-        var box = jQuery(".box"); // reference to the HTML .box element
-        var board = jQuery(".board"); // reference to the HTML .board element
-        var boardWidth = board.width(); // the maximum X-Coordinate of the screen
-
-        // update the boardWidth variable when the window is resized
-        jQuery(window).on("resize", function () {
-          boardWidth = board.width();
+        trail.css({
+          left: positionX,
+          top: positionY
         });
 
-        // Every 50 milliseconds, call the update Function (see below)
-        setInterval(update, 50);
+        jQuery("body").append(trail);
 
-        // Every time the box is clicked, call the handleBoxClick Function (see below)
-        box.on("click", handleBoxClick);
+        setTimeout(function () {
+          trail.css("opacity", "0");
+        }, 50);
 
-        // moves the Box to a new position on the screen along the X-Axis
-        function moveBoxTo(newPositionX) {
-          box.css("left", newPositionX);
+        setTimeout(function () {
+          trail.remove();
+        }, 550);
+      }
+
+      // update the boardWidth variable when the window is resized
+      jQuery(window).on("resize", function () {
+        boardWidth = board.width();
+        boardHeight = jQuery(window).height();
+      });
+
+      // Every 50 milliseconds, call the update Function (see below)
+      setInterval(update, 50);
+
+      // Every time the box is clicked, call the handleBoxClick Function (see below)
+      box.on("click", handleBoxClick);
+
+      // moves the Box to a new position on the screen along the X-Axis
+      function moveBoxTo(newPositionX, newPositionY) {
+        box.css("left", newPositionX);
+        box.css("top", newPositionY);
+      }
+
+      // changes the text displayed on the Box
+      function changeBoxText(newText) {
+        box.text(newText);
+      }
+
+      //////////////////////////////////////////////////////////////////
+      /////////////////// YOUR CODE BELOW HERE /////////////////////////
+      //////////////////////////////////////////////////////////////////
+
+      // TODO 2 - Variable declarations
+
+      var positionX = 5;
+      var points = 0;
+      var speed = 10;
+      var positionY = 400;
+      var speedY = 10;
+      var boardHeight = jQuery(window).height();
+
+      /**
+       * This Function will be called 20 times/second.
+       * Each time it is called, it should move the Box to a new location.
+       * If the box drifts off the screen, turn it around!
+       */
+      function update() {
+        positionX = positionX + speed;
+        positionY = positionY + speedY;
+        moveBoxTo(positionX, positionY);
+        createAfterimage();
+        if (positionX > boardWidth - box.width()) {
+          positionX = boardWidth - box.width();
+          speed *= -1;
+          playEdgeSound();
+        } else if (positionX < 0) {
+          positionX = 0;
+          speed *= -1;
+          playEdgeSound();
         }
 
-        // changes the text displayed on the Box
-        function changeBoxText(newText) {
-          box.text(newText);
-        }
-
-        //////////////////////////////////////////////////////////////////
-        /////////////////// YOUR CODE BELOW HERE /////////////////////////
-        //////////////////////////////////////////////////////////////////
-
-        // TODO 2 - Variable declarations
-
-
-
-
-
-        /**
-         * This Function will be called 20 times/second.
-         * Each time it is called, it should move the Box to a new location.
-         * If the box drifts off the screen, turn it around!
-         */
-        function update() {
-
-        
-
-          
-        }
-
-        /**
-         * This Function will be called each time the box is clicked.
-         * Each time it is called, it should perform each of the following actions:
-         * - increase the points total
-         * - increase the speed
-         * - move the box to the left side of the screen.
-         */
-        function handleBoxClick() {
-
-
-
-
+        if (positionY > boardHeight - box.height()) {
+          positionY = boardHeight - box.height();
+          speedY *= -1;
+          playEdgeSound();
+        } else if (positionY < 0) {
+          positionY = 0;
+          speedY *= -1;
+          playEdgeSound();
         }
 
 
-        
-      })();
-    </script>
-  </body>
+
+
+      }
+
+      /**
+       * This Function will be called each time the box is clicked.
+       * Each time it is called, it should perform each of the following actions:
+       * - increase the points total
+       * - increase the speed
+       * - move the box to the left side of the screen.
+       */
+      function handleBoxClick() {
+        positionX = Math.random() * (boardWidth - box.width());
+        changeBoxText(points)
+        points++;
+        speed = 3 * points + 10;;
+
+
+
+
+
+      }
+
+
+
+    })();
+  </script>
+</body>
+
 </html>
