@@ -67,9 +67,9 @@
       /////////////////// SETUP DO NOT DELETE //////////////////////////
       //////////////////////////////////////////////////////////////////
 
-      var box = jQuery(".box"); // reference to the HTML .box element
-      var board = jQuery(".board"); // reference to the HTML .board element
-      var boardWidth = board.width(); // the maximum X-Coordinate of the screen
+      var box = jQuery(".box");
+      var board = jQuery(".board");
+      var boardWidth = board.width();
       var edgeSound = document.getElementById("edgeSound");
 
       function playEdgeSound() {
@@ -96,25 +96,25 @@
         }, 550);
       }
 
-      // update the boardWidth variable when the window is resized
+     
       jQuery(window).on("resize", function () {
         boardWidth = board.width();
         boardHeight = jQuery(window).height();
       });
 
-      // Every 50 milliseconds, call the update Function (see below)
+     
       setInterval(update, 50);
 
-      // Every time the box is clicked, call the handleBoxClick Function (see below)
+      
       box.on("click", handleBoxClick);
 
-      // moves the Box to a new position on the screen along the X-Axis
+    
       function moveBoxTo(newPositionX, newPositionY) {
         box.css("left", newPositionX);
         box.css("top", newPositionY);
       }
 
-      // changes the text displayed on the Box
+      
       function changeBoxText(newText) {
         box.text(newText);
       }
@@ -132,11 +132,7 @@
       var speedY = 10;
       var boardHeight = jQuery(window).height();
 
-      /**
-       * This Function will be called 20 times/second.
-       * Each time it is called, it should move the Box to a new location.
-       * If the box drifts off the screen, turn it around!
-       */
+      
       function update() {
         positionX = positionX + speed;
         positionY = positionY + speedY;
