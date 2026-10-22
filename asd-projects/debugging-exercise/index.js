@@ -8,13 +8,14 @@ $(document).ready(function () {
 var doubleMaxSpeed = 5;
 var maxGhosts = 10;
 var $board = $("#board");
-var boardWidth = $($board).width();
-var boardHeight = $($board).height();
+var boardWidth = $board.width();
+var boardHeight = $board.height();
+var ghostWidth = 50;
+var ghostHeight = 50;
 var ghosts = [];
-var ghostRadius = 10;
 // modify these values if you want faster moving ghosts or a shorter countdown timer
-const FPS = 25;
-const initialDelay = 5_000;
+const FPS = 1000;
+const initialDelay = 0;
 
 //////////
 // startup
@@ -45,15 +46,15 @@ function makeGhost(id) {
   var ghost = {};
 
   // this creates some useful variables that are not directly placed in the object
-  var maxX = boardWidth - ghostRadius * 2;
-  var maxY = boardHeight - ghostRadius * 2;
+  var maxX = boardWidth - ghostWidth;
+  var maxY = boardHeight - ghostHeight;
 
   // this gives the ghost object all of the data that it needs to store
   ghost.id = "#" + id;
-  ghost.x = Math.random() * maXX + ghostRadius;
-  ghost.y = Math.random() * maxY + ghostRadius;
+  ghost.x = Math.random() * maxX;
+  ghost.y = Math.random() * maxY;
   ghost.speedX = decideSpeed();
-  ghost.speedY = desideSpeed();
+  ghost.speedY = decideSpeed();
 
   // assign a random color for the ghost's glow
   const colors = [
@@ -75,16 +76,16 @@ function makeGhost(id) {
 
 // this generates a random speed value
 function decideSpeed() {
-  return (Math.random() * doubleMaxSpeed) / 2 - doubleMaxSpeed;
+  return (Math.random() * doubleMaxSpeed) - doubleMaxSpeed / 2;
 }
 
 // this generates an id for a ghost given the ghost's number
 function getId(number) {
-  return "ghost" + number; ()
+  return "ghost" + number;
 }
 
 // this adds a ghost into the HTML
-funtion addNewGhostElement(ghost, id) {
+function addNewGhostElement(ghost, id) {
   // this creates the HTML for a new ghost element
   var $ghost = $("<img>")
     .attr("id", id)
@@ -102,12 +103,12 @@ funtion addNewGhostElement(ghost, id) {
 //////////////////
 
 // this should move all of the ghosts
-function update) {
+function update() {
   // loop over the ghosts array. We use the maxGhosts variable instead of ghosts.length
   // to make seeing issues in the debugger slightly easier (in practice, you should use
   // ghosts.length, but do NOT change it here)
   for (var i = 0; i < maxGhosts; i++) {
-    var ghost = ghosts[j];
+    var ghost = ghosts[i];
 
     // move the ghost
     moveGhost(ghost);
@@ -129,38 +130,34 @@ function update) {
 
 // this moves ghosts in memory but doesn't update them on the screen
 function moveGhost(ghost) {
-  ghost.x = ghost.speedX;
+  ghost.x += ghost.speedX;
   ghost.y += ghost.speedY;
 }
 
 // this bounces ghosts if they hit a wall
 function bounceGhost(ghost) {
-  // this bounces off the left wall
-  if (ghost.x < 0{
-    ghost.x -= ghost.speedX;
-    ghost.speedX *= -1;
+  var maxX = boardWidth - ghostWidth;
+  var maxY = boardHeight - ghostHeight;
+
+  if (ghost.x < 0) {
+    ghost.x = 0;
+    ghost.speedX = Math.abs(ghost.speedX);
+  } else if (ghost.x > maxX) {
+    ghost.x = maxX;
+    ghost.speedX = -Math.abs(ghost.speedX);
   }
-  // this bounces off the right wall
-  else if (ghost.x > boardWidth) {
-    ghost.x -= ghost.speedX;
-    ghost.speedX *= -1;
-  }
-  // this bounces off the top wall
+
   if (ghost.y < 0) {
-    ghost.y -= ghost.speedY;
-    ghost.speedY *= -1;
-  }
-  // this bounces off the bottom wall
-  else if (ghost.y > boardHeight) {
-    ghost.y -= ghost.speedY;
-    ghost.speedX *= -1;
+    ghost.y = 0;
+    ghost.speedY = Math.abs(ghost.speedY);
+  } else if (ghost.y > maxY) {
+    ghost.y = maxY;
+    ghost.speedY = -Math.abs(ghost.speedY);
   }
 }
 
 // this redraws the ghost's position on the screen
 function updateGhostOnScreen(ghost) {
-  maxGhosts = 1;
-
   // these lines redraw the ghost's position
   $(ghost.id).css("left", ghost.x);
   $(ghost.id).css("top", ghost.y);
