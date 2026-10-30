@@ -4,6 +4,7 @@ body {
 }
 
 #board {
+  position: relative;
   width: 440px;
   height: 440px;
   border: 1px solid white;
@@ -23,15 +24,95 @@ body {
 }
 
 .snake {
-  background-color: green;
+  background-color: transparent;
   z-index: 2;
 }
 
 #snake-head {
-  background-color: darkgreen;
+  background-color: green;
+  z-index: 3;
+  transition: left 100ms linear, top 100ms linear;
+}
+
+#snake-head::before,
+#snake-head::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  right: 3px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: black;
+}
+
+#snake-head::after {
+  top: 13px;
+}
+
+#snake-head.snake-facing-left::before,
+#snake-head.snake-facing-left::after {
+  right: auto;
+  left: 3px;
+}
+
+#snake-head.snake-facing-up::before,
+#snake-head.snake-facing-up::after {
+  top: 3px;
+  bottom: auto;
+  right: auto;
+  left: 4px;
+}
+
+#snake-head.snake-facing-up::after {
+  left: 13px;
+}
+
+#snake-head.snake-facing-down::before,
+#snake-head.snake-facing-down::after {
+  top: auto;
+  bottom: 3px;
+  right: auto;
+  left: 4px;
+}
+
+#snake-head.snake-facing-down::after {
+  left: 13px;
+}
+
+.snake-renderer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.sandworm-outline,
+.sandworm-body {
+  stroke: green;
+}
+
+.sandworm-ridges,
+.snake-face {
+  display: none;
 }
 
 .apple {
   background-color: red;
   z-index: 1;
+  overflow: visible;
+  transition:
+    left 200ms ease-in,
+    top 200ms ease-in,
+    transform 200ms ease-in,
+    opacity 200ms ease-in;
+}
+
+.apple-being-eaten {
+  z-index: 5;
+  opacity: 0;
+  transform: scale(0.15);
 }
